@@ -1,4 +1,4 @@
-
+// See pc.v if looking for PC register
 module Reg_Async_Reset_Enable (reset, enable, clk, in, out);
 
 input reset, enable, clk;
@@ -15,4 +15,4 @@ always@(posedge clk)
 	out <= in;
     end
 
-endmodule 
+endmodule
