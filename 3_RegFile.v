@@ -1,3 +1,4 @@
+// Taken from HW6
 module reg_file(input regWrite, 
 				input clk,
 				input [4:0] readReg1, 
