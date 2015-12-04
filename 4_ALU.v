@@ -2,9 +2,9 @@ module ALU(clk, control, data_input1, data_input2, data_output, zero);
 
 input wire clk;
 input wire [3:0] control;
-input wire [31:0] data_input1, data_input2;
+input wire signed [31:0] data_input1, data_input2;
 
-output reg [31:0] data_output;
+output reg signed [31:0] data_output;
 output reg zero;
 
 // Control signal definitions, taken from page 260
