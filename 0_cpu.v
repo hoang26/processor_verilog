@@ -1,31 +1,68 @@
 //  Top-level processor module
 
-module processor (
+module processor (input wire clk,
+				  input wire reset,
+				  
 			     );
 
-// Skeleton
+wire [31:0] pc_in;
+wire [31:0] pc_out;
+wire [31:0] inst_addr;
+wire [31:0] instr;
+wire [31:0] data_addr;
+wire [31:0] data_in;
+wire [31:0] data_out;
+wire [31:0] writeData;
+wire [31:0] readData1;
+wire [31:0] readData2;
+wire [31:0] sign_ex_out;
 
-//Example module instantiation
-/*
-shift_reg shift_reg_1(
-.clk (clk_50),
-.reset_n (reset_n),
-.data_ena (data_ena),
-.serial_data (serial_data),
-.parallel_data (shift_reg_out));
-*/
+wire [31:0] mux0_in0;
+wire [31:0] mux0_in1;
+wire [31:0] mux0_out;
+wire [31:0] mux1_in0;
+wire [31:0] mux1_in1;
+wire [31:0] mux1_out;
+wire [31:0] mux2_in0;
+wire [31:0] mux2_in1;
+wire [31:0] mux2_out;
+wire [31:0] mux3_in0;
+wire [31:0] mux3_in1;
+wire [31:0] mux3_out;
+wire [31:0] mux4_in0;
+wire [31:0] mux4_in1;
+wire [31:0] mux4_out;
 
-//pc pc0(.*); // Instantiating where all wire names to PC are the same as their
-			  // corresponding pin names
-/*Change instantiation to:
-pc pc0(
-.in (pc_in),
-.clk (clk_50),
-.rst,
-.en
-)
-if wire names differ from pin names
-*/
+wire [31:0] alu_data_input1;
+wire [31:0] alu_data_input2;
+wire [31:0] alu_data_output;
+
+wire [31:0] sl32_in;
+wire [31:0] sl32_out;
+
+wire [25:0] sl26_in;
+wire [25:0] sl26_out;
+
+wire [15:0] signext0;
+
+wire [5:0] opcode;
+wire [5:0] aluctrl_func_op;
+
+wire [4:0] readReg1;
+wire [4:0] readReg2;
+wire [4:0] writeReg;
+
+wire [3:0] aluctrl_alu_control_sig, alu_ctrl;
+
+wire [1:0] alu_op, aluctrl_alu_op;
+
+wire pc_reset, pc_en, mem_mem_read, mem_mem_write, reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write, add0_in0, add0_in1, add0_out,
+     add1_in0, add1_in1, add1_out, reg_reg_write, mux0_sel, mux1_sel, mux2_sel, mux3_sel, mux4_sel, zero;
+
+
+
+
+
 
 pc pc0(
 	.in (pc_in), //32 bits
@@ -89,8 +126,8 @@ reg_file registers(
 
 sign_extender signext0(
 	.clk,
-	.in, //16 bits
-	.out //32 bits
+	.in (sign_ext_in), //16 bits
+	.out (sign_ex_out) //32 bits
 	);
 
 Shift_left2_26b sl26(
@@ -161,19 +198,6 @@ ALU alu0(
 	.zero
 	);
 
-// Instantiate Program counter register
-// PC+4
-// Shift left 26
-// Control unit after decoding --> forward nets to mux's and alu
-// RegFile
-// Sign extender
-// ALU control
-// ALU
-// Shift left 32
-// Adder
-// Memory
-
-// Mux's as we go
 
 // Considerations: Reordering of modules to reduce clock cycles
 
