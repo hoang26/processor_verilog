@@ -1,8 +1,7 @@
 //  Top-level processor module
 
 module processor (input wire clk,
-				  input wire reset,
-				  
+				  input wire reset
 			     );
 
 wire [31:0] pc_in;
@@ -15,7 +14,7 @@ wire [31:0] data_out;
 wire [31:0] writeData;
 wire [31:0] readData1;
 wire [31:0] readData2;
-wire [31:0] sign_ex_out;
+wire [31:0] sign_ext_out;
 
 wire [31:0] mux0_in0;
 wire [31:0] mux0_in1;
@@ -43,7 +42,7 @@ wire [31:0] sl32_out;
 wire [25:0] sl26_in;
 wire [25:0] sl26_out;
 
-wire [15:0] signext0;
+wire [15:0] sign_ext_in;
 
 wire [5:0] opcode;
 wire [5:0] aluctrl_func_op;
@@ -127,7 +126,7 @@ reg_file registers(
 sign_extender signext0(
 	.clk,
 	.in (sign_ext_in), //16 bits
-	.out (sign_ex_out) //32 bits
+	.out (sign_ext_out) //32 bits
 	);
 
 Shift_left2_26b sl26(

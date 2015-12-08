@@ -1,4 +1,4 @@
-module Adder_32b(input0, input1, out, clk)
+module Adder_32b(input0, input1, out, clk);
 
     input wire [31:0] input0;
     input wire [31:0] input1;
