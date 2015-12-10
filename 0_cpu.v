@@ -1,7 +1,8 @@
 //  Top-level processor module
 
 module processor (input wire clk,
-				  input wire reset
+				  input wire pc_reset,
+				  input wire pc_enable
 			     );
 
 wire [31:0] pc_in;
@@ -32,14 +33,15 @@ wire [31:0] mux4_in0;
 wire [31:0] mux4_in1;
 wire [31:0] mux4_out;
 
+wire [31:0] mem_data_out;
+
 wire [31:0] add0_in1;
-wire [31:0] add0_out;
+wire [31:0] pc_plus_four;
 
 wire [31:0] alu_data_input1;
 wire [31:0] alu_data_input2;
 wire [31:0] alu_data_output;
 
-wire [31:0] sl32_in;
 wire [31:0] sl32_out;
 wire [31:0] jump_addr;
 
@@ -59,11 +61,11 @@ wire [3:0] aluctrl_alu_control_sig, alu_ctrl;
 
 wire [1:0] alu_op, aluctrl_alu_op;
 
-wire pc_reset, pc_en, mem_mem_read, mem_mem_write, reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write,
-     add1_in0, add1_in1, add1_out, reg_reg_write, mux0_sel, mux1_sel, mux2_sel, mux3_sel, mux4_sel, mem_read, mem_write, zero;
+wire pc_en, mem_mem_read, mem_mem_write, reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write,
+     add1_in0, add1_in1, adder_result, reg_reg_write, mux0_sel, mux1_sel, mux2_sel, mux3_sel, mux4_sel, mem_read, mem_write, zero;
 	 
 assign add0_in1 = 32'd4;
-assign jump_addr = {{add0_out[31:28]}, {sl26_out[27:0]}};
+assign jump_addr = {{pc_plus_four[31:28]}, {sl26_out[27:0]}};
 assign aluctrl_func_op = instr[5:0];
 
 assign mux3_sel =  branch & zero; // bit-wise AND
@@ -84,9 +86,9 @@ Control ctrl0(
 	.reg_dst,
 	.jump,
 	.branch,
-	.mem_read,
+	.ctrl_mem_read,
 	.mem_to_reg,
-	.mem_write,
+	.ctrl_mem_write,
 	.alu_src,
 	.reg_write,
 	.alu_op //2 bits
@@ -96,9 +98,9 @@ Memory mem0(
 	.inst_addr (pc_out), //32 bits
 	.instr,		//32 bits
 	.data_addr (alu_data_output),	//32 bits
-	.data_in (mem_data_in), //32 bits
-	.mem_read (mem_mem_read),
-	.mem_write (mem_mem_write),
+	.data_in (readData2), //32 bits
+	.mem_read (ctrl_mem_read),
+	.mem_write (ctrl_mem_write),
 	.data_out (mem_data_out) //32 bits
 	);
 
@@ -107,15 +109,15 @@ Adder_32b pc_adder(
 	.clk,
 	.input0 (pc_out),
 	.input1 (add0_in1),
-	.out (add0_out)
+	.out (pc_plus_four)
 	);
 
 // Adder for shift left 2
 Adder_32b adder1(
 	.clk,
-	.input0 (add0_out),
+	.input0 (pc_plus_four),
 	.input1 (sl32_out),
-	.out (add1_out)
+	.out (adder_result)
 	);
 
 reg_file registers(
@@ -145,8 +147,8 @@ Shift_left2_26b sl26(
 
 Shift_left2_32b sl32(
 	.clk,
-	.in (sl32_in), //26bits
-	.out (sl32_out) //26bits
+	.in (sign_ext_out), //32bits
+	.out (sl32_out) //32bits
 	);
 
 // THIS NEEDS TO BE 5 BIT MUX
@@ -176,8 +178,8 @@ Mux2x1_32b Mux_MemtoReg(
 
 Mux2x1_32b Mux_Branch(
 	.clk,
-	.input0 (add0_out), //32bits
-	.input1 (add1_out), //32bits
+	.input0 (pc_plus_four), //32bits
+	.input1 (adder_result), //32bits
 	.select (mux3_sel),
 	.out (mux3_out) //32bits
 	);

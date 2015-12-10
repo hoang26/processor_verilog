@@ -1,19 +1,20 @@
 `timescale 1ns/100ps
 module processor_tb;
 
-reg clk, reset;
+reg clk, pc_reset, pc_enable;
 
 //wire [31:0] regFile [31:0];
 
 reg [4:0] i;
 reg [4:0] j;
 
-processor DUT(clk, reset);
+processor DUT(clk, reset, pc_enable);
 
 // Initial Conditions
 initial begin
     clk=0;
-	reset=0;
+	pc_reset=0;
+	pc_enable=1;
 end
 
 // Clock
