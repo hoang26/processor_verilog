@@ -17,20 +17,10 @@ wire [31:0] readData1;
 wire [31:0] readData2;
 wire [31:0] sign_ext_out;
 
-//wire [31:0] mux0_in0;
-//wire [31:0] mux0_in1;
 wire [4:0] mux0_out;
-wire [31:0] mux1_in0;
-wire [31:0] mux1_in1;
 wire [31:0] mux1_out;
-wire [31:0] mux2_in0;
-wire [31:0] mux2_in1;
 wire [31:0] mux2_out;
-wire [31:0] mux3_in0;
-wire [31:0] mux3_in1;
 wire [31:0] mux3_out;
-wire [31:0] mux4_in0;
-wire [31:0] mux4_in1;
 wire [31:0] mux4_out;
 
 wire [31:0] mem_data_out;
@@ -38,14 +28,11 @@ wire [31:0] mem_data_out;
 wire [31:0] add0_in1;
 wire [31:0] pc_plus_four;
 
-wire [31:0] alu_data_input1;
-wire [31:0] alu_data_input2;
 wire [31:0] alu_data_output;
 
 wire [31:0] sl32_out;
 wire [31:0] jump_addr;
 
-wire [25:0] sl26_in;
 wire [27:0] sl26_out;
 
 wire [15:0] sign_ext_in;
@@ -57,13 +44,12 @@ wire [4:0] readReg1;
 wire [4:0] readReg2;
 wire [4:0] writeReg;
 
-wire [3:0] aluctrl_alu_control_sig, alu_ctrl;
+wire [3:0] alu_ctrl;
 
-wire [1:0] alu_op, aluctrl_alu_op;
+wire [1:0] alu_op;
 
-wire pc_en, mem_mem_read, mem_mem_write, reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write,
-     add1_in0, add1_in1, adder_result, reg_reg_write, mux0_sel, mux1_sel, mux2_sel, mux3_sel, mux4_sel, mem_read, mem_write, zero;
-	 
+wire reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write, adder_result, mux3_sel, mem_read, mem_write, zero;
+
 assign add0_in1 = 32'd4;
 assign jump_addr = {{pc_plus_four[31:28]}, {sl26_out[27:0]}};
 assign aluctrl_func_op = instr[5:0];
@@ -74,7 +60,7 @@ pc pc0(
 	.in (pc_in), //32 bits
 	.clk,
 	.rst (pc_reset),
-	.en (pc_en),
+	.en (pc_enable),
 	.out (pc_out) //32 bits
 	);
 
