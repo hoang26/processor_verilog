@@ -1,3 +1,4 @@
+`timescale 1ns/100ps
 module processor_test_tb;
 
 reg clk;
@@ -26,10 +27,13 @@ initial begin
     //Step 2 - test if adder does PC+4
     //Step 3 - Check if instruction memory is getting an address
     //          and returning an instruction address
-    rst=1;
+	 #50
     en=1;
+	
+    #50
+	rst=1;
 
-    #15
+    #50
     rst=0;
 
 

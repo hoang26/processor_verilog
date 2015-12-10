@@ -9,6 +9,7 @@ wire [31:0] pc_out;
 
 // Step 2
 wire [31:0] pc_plus_four;
+wire [31:0] add0_in1;
 
 assign add0_in1 = 32'd4;
 
@@ -18,6 +19,7 @@ wire [31:0] readData2;
 wire ctrl_mem_read;
 wire ctrl_mem_write;
 wire [31:0] mem_data_out;
+wire [31:0] instr;
 
 //************************ STEP 1 - PC ************************************
 pc pc0(
