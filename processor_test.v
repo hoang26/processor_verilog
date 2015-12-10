@@ -21,6 +21,11 @@ wire ctrl_mem_write;
 wire [31:0] mem_data_out;
 wire [31:0] instr;
 
+// Step 4
+wire [31:0] instr;
+wire reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write;
+wire [1:0] alu_op;
+
 //************************ STEP 1 - PC ************************************
 pc pc0(
 	.in (pc_in), //32 bits
@@ -47,6 +52,21 @@ Memory mem0(
 	.mem_read (ctrl_mem_read),
 	.mem_write (ctrl_mem_write),
 	.data_out (mem_data_out) //32 bits
+	);
+
+//******************* STEP 4 - CONTROL *******************************
+Control ctrl0(
+	.clk,
+	.opcode (instr[31:26]), //6 bits
+	.reg_dst,
+	.jump,
+	.branch,
+	.ctrl_mem_read,
+	.mem_to_reg,
+	.ctrl_mem_write,
+	.alu_src,
+	.reg_write,
+	.alu_op //2 bits
 	);
 
 endmodule
