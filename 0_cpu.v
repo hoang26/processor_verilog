@@ -1,24 +1,32 @@
 //  Top-level processor module
 
-module processor(clk, pc_reset, pc_enable, instr, data_out, data_in, inst_addr, data_addr, ctrl_mem_read, ctrl_mem_write);
+module processor(clk,
+	pc_reset,
+	pc_enable,
+	instr,
+	data_out,
+	data_in,
+	inst_addr,
+	data_addr,
+	ctrl_mem_read,
+	ctrl_mem_write);
 
-input wire clk, pc_reset, pc_enable;
+input wire clk;
+input wire pc_reset;
+input wire pc_enable;
 
-input wire [31:0] instr;
-input wire [31:0] data_out;
-output reg [31:0] data_in;
-output reg [31:0] inst_addr;
-output reg [31:0] data_addr;
-output reg ctrl_mem_read, ctrl_mem_write;
+input wire[31:0] instr;
+input wire[31:0] data_out;
+output wire[31:0] data_in;
+output wire[31:0] inst_addr;
+output wire[31:0] data_addr;
+output reg ctrl_mem_read;
+output reg ctrl_mem_write;
 
 wire [31:0] pc_in;
 wire [31:0] pc_out;
-//wire [31:0] inst_addr;
-//wire [31:0] instr;
-//wire [31:0] data_addr;
-//wire [31:0] data_in;
-//wire [31:0] data_out;
-//wire [31:0] writeData;
+
+wire [31:0] writeData;
 wire [31:0] readData1;
 wire [31:0] readData2;
 wire [31:0] sign_ext_out;
@@ -27,9 +35,6 @@ wire [4:0] mux0_out;
 wire [31:0] mux1_out;
 wire [31:0] mux2_out;
 wire [31:0] mux3_out;
-wire [31:0] mux4_out;
-
-wire [31:0] mem_data_out;
 
 wire [31:0] add0_in1;
 wire [31:0] pc_plus_four;
@@ -62,6 +67,10 @@ assign aluctrl_func_op = instr[5:0];
 
 assign mux3_sel =  branch & zero; // bit-wise AND
 
+assign inst_addr = pc_out;
+assign data_in = readData2;
+assign data_addr = alu_data_output;
+
 pc pc0(
 	.in (pc_in), //32 bits
 	.clk,
@@ -85,18 +94,6 @@ Control ctrl0(
 	.reg_write,
 	.alu_op //2 bits
 	);
-
-	/*
-Memory mem0(
-	.inst_addr (pc_out), //32 bits
-	.instr,		//32 bits
-	.data_addr (alu_data_output),	//32 bits
-	.data_in (readData2), //32 bits
-	.mem_read (ctrl_mem_read),
-	.mem_write (ctrl_mem_write),
-	.data_out (mem_data_out) //32 bits
-	);
-	*/
 
 // adder for PC + 4
 Adder_32b pc_adder(
@@ -127,7 +124,7 @@ reg_file registers(
 
 sign_extender signext0(
 	.clk,
-	.in (sign_ext_in), //16 bits
+	.in (instr[15:0]), //16 bits
 	.out (sign_ext_out) //32 bits
 	);
 
@@ -165,7 +162,7 @@ Mux2x1_32b Mux_ALUsrc(
 Mux2x1_32b Mux_MemtoReg(
 	.clk,
 	.input0 (alu_data_output), //32bits
-	.input1 (mem_data_out), //32bits
+	.input1 (data_out), //32bits
 	.select (mem_to_reg),
 	.out (mux2_out) //32bits
 	);
