@@ -1,4 +1,4 @@
-module Shift_left2(in, out, clk);
+module Shift_left2_32b(in, out, clk);
 
     input wire [31:0] in;
     input wire clk;

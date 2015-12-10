@@ -32,12 +32,16 @@ wire [31:0] mux4_in0;
 wire [31:0] mux4_in1;
 wire [31:0] mux4_out;
 
+wire [31:0] add0_in1;
+wire [31:0] add0_out;
+
 wire [31:0] alu_data_input1;
 wire [31:0] alu_data_input2;
 wire [31:0] alu_data_output;
 
 wire [31:0] sl32_in;
 wire [31:0] sl32_out;
+wire [31:0] jump_addr;
 
 wire [25:0] sl26_in;
 wire [27:0] sl26_out;
@@ -55,10 +59,14 @@ wire [3:0] aluctrl_alu_control_sig, alu_ctrl;
 
 wire [1:0] alu_op, aluctrl_alu_op;
 
-`define wire [31:0] add0_in1 = 4;
+wire pc_reset, pc_en, mem_mem_read, mem_mem_write, reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write,
+     add1_in0, add1_in1, add1_out, reg_reg_write, mux0_sel, mux1_sel, mux2_sel, mux3_sel, mux4_sel, mem_read, mem_write, zero;
+	 
+assign add0_in1 = 32'd4;
+assign jump_addr = {{add0_out[31:28]}, {sl26_out[27:0]}};
+assign aluctrl_func_op = instr[5:0];
 
-wire pc_reset, pc_en, mem_mem_read, mem_mem_write, reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write, add0_in0, add0_out,
-     add1_in0, add1_in1, add1_out, reg_reg_write, mux0_sel, mux1_sel, mux2_sel, mux3_sel, mux4_sel, zero;
+assign mux3_sel =  branch & zero; // bit-wise AND
 
 pc pc0(
 	.in (pc_in), //32 bits
@@ -85,7 +93,6 @@ Control ctrl0(
 	);
 
 Memory mem0(
-	.clk,
 	.inst_addr (pc_out), //32 bits
 	.instr,		//32 bits
 	.data_addr (alu_data_output),	//32 bits
@@ -143,7 +150,7 @@ Shift_left2_32b sl32(
 	);
 
 // THIS NEEDS TO BE 5 BIT MUX
-Mux2x1_5b mux_pre_reg(
+Mux2x1_5b Mux_RegDst(
 	.clk,
 	.input0 (instr[20:16]), //5bits
 	.input1 (instr[15:11]), //5bits
@@ -151,7 +158,7 @@ Mux2x1_5b mux_pre_reg(
 	.out (mux0_out) //5bits
 	);
 
-Mux2x1_32b mux_post_reg(
+Mux2x1_32b Mux_ALUsrc(
 	.clk,
 	.input0 (readData2), //32bits
 	.input1 (sign_ext_out), //32bits
@@ -159,7 +166,7 @@ Mux2x1_32b mux_post_reg(
 	.out (mux1_out) //32bits
 	);
 
-Mux2x1_32b mux_post_dmem(
+Mux2x1_32b Mux_MemtoReg(
 	.clk,
 	.input0 (alu_data_output), //32bits
 	.input1 (mem_data_out), //32bits
@@ -167,7 +174,7 @@ Mux2x1_32b mux_post_dmem(
 	.out (mux2_out) //32bits
 	);
 
-Mux2x1_32b mux_shift_adder(
+Mux2x1_32b Mux_Branch(
 	.clk,
 	.input0 (add0_out), //32bits
 	.input1 (add1_out), //32bits
@@ -175,10 +182,10 @@ Mux2x1_32b mux_shift_adder(
 	.out (mux3_out) //32bits
 	);
 
-Mux2x1_32b mux_pcin(
+Mux2x1_32b Mux_Jump(
 	.clk,
 	.input0 (mux3_out), //32bits
-	.input1 (sl26_out), //32bits
+	.input1 (jump_addr), //32bits
 	.select (jump),
 	.out (pc_in) //32bits
 	);
