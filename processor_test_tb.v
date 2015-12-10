@@ -7,7 +7,7 @@ reg [31:0] in;
 
 wire [31:0] out;
 
-pc DUT(in, clk, rst, en, out);
+processor_test DUT(clk, rst, en);
 
 // Initial Conditions
 initial begin
@@ -21,11 +21,16 @@ always #5 clk=~clk;
 
 // Input Waveform
 initial begin
+
+    //Step 1 - test if PC resets to 0x3000
+    //Step 2 - test if adder does PC+4
     rst=1;
     en=1;
 
     #15
     rst=0;
+
+
 end
 
 endmodule
