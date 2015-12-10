@@ -24,6 +24,8 @@ initial begin
 
     //Step 1 - test if PC resets to 0x3000
     //Step 2 - test if adder does PC+4
+    //Step 3 - Check if instruction memory is getting an address
+    //          and returning an instruction address
     rst=1;
     en=1;
 
