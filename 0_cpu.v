@@ -1,18 +1,24 @@
 //  Top-level processor module
 
-module processor (input wire clk,
-				  input wire pc_reset,
-				  input wire pc_enable
-			     );
+module processor(clk, pc_reset, pc_enable, instr, data_out, data_in, inst_addr, data_addr, ctrl_mem_read, ctrl_mem_write);
+
+input wire clk, pc_reset, pc_enable;
+
+input wire [31:0] instr;
+input wire [31:0] data_out;
+output reg [31:0] data_in;
+output reg [31:0] inst_addr;
+output reg [31:0] data_addr;
+output reg ctrl_mem_read, ctrl_mem_write;
 
 wire [31:0] pc_in;
 wire [31:0] pc_out;
-wire [31:0] inst_addr;
-wire [31:0] instr;
-wire [31:0] data_addr;
-wire [31:0] data_in;
-wire [31:0] data_out;
-wire [31:0] writeData;
+//wire [31:0] inst_addr;
+//wire [31:0] instr;
+//wire [31:0] data_addr;
+//wire [31:0] data_in;
+//wire [31:0] data_out;
+//wire [31:0] writeData;
 wire [31:0] readData1;
 wire [31:0] readData2;
 wire [31:0] sign_ext_out;
@@ -48,7 +54,7 @@ wire [3:0] alu_ctrl;
 
 wire [1:0] alu_op;
 
-wire reg_dst, jump, branch, mem_to_reg, ctrl_mem_read, ctrl_mem_write, alu_src, reg_write, adder_result, mux3_sel, mem_read, mem_write, zero;
+wire reg_dst, jump, branch, mem_to_reg, alu_src, reg_write, adder_result, mux3_sel, mem_read, mem_write, zero;
 
 assign add0_in1 = 32'd4;
 assign jump_addr = {{pc_plus_four[31:28]}, {sl26_out[27:0]}};
@@ -80,6 +86,7 @@ Control ctrl0(
 	.alu_op //2 bits
 	);
 
+	/*
 Memory mem0(
 	.inst_addr (pc_out), //32 bits
 	.instr,		//32 bits
@@ -89,6 +96,7 @@ Memory mem0(
 	.mem_write (ctrl_mem_write),
 	.data_out (mem_data_out) //32 bits
 	);
+	*/
 
 // adder for PC + 4
 Adder_32b pc_adder(
