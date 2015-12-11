@@ -1,16 +1,20 @@
 `timescale 1ns/100ps
 module processor_tb;
 
-/*
-wire ctrl_mem_read, ctrl_mem_write;
-wire clk, pc_reset, pc_enable;
-wire [31:0] inst_addr;
-wire [31:0] instr;
-wire [31:0] data_addr;
-wire [31:0] data_in;
-wire [31:0] data_out;
-*/
+reg clk;
+reg pc_reset;
+reg pc_enable;
 
+// Making these wires instead of registers resolves:
+// "illegal output or inout port connection for port"
+wire [31:0] instr;
+wire [31:0] data_out;
+
+wire [31:0] data_in;
+wire [31:0] inst_addr;
+wire [31:0] data_addr;
+wire mem_read_ctrlsig;
+wire mem_write_ctrlsig;
 
 processor DUT(
 	clk,
@@ -21,8 +25,8 @@ processor DUT(
 	data_in,
 	inst_addr,
 	data_addr,
-	ctrl_mem_read,
-	ctrl_mem_write
+	mem_read_ctrlsig,
+	mem_write_ctrlsig
 	);
 
 
@@ -33,7 +37,7 @@ Memory mem(
 	data_in,
 	ctrl_mem_read,
 	ctrl_mem_write,
-	data_ou
+	data_out
 	);
 
 // Initial Conditions
