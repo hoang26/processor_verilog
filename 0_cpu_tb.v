@@ -17,27 +17,27 @@ wire mem_read_ctrlsig;
 wire mem_write_ctrlsig;
 
 processor DUT(
-	clk,
-	pc_reset,
-	pc_enable,
-	instr,
-	data_out,
-	data_in,
-	inst_addr,
-	data_addr,
-	mem_read_ctrlsig,
-	mem_write_ctrlsig
+	.clk,
+	.pc_reset,
+	.pc_enable,
+	.instr,
+	.data_out,
+	.data_in,
+	.inst_addr,
+	.data_addr,
+	.mem_read_ctrlsig,
+	.mem_write_ctrlsig
 	);
 
 
 Memory mem(
-	inst_addr,
-	instr,
-	data_addr,
-	data_in,
-	ctrl_mem_read,
-	ctrl_mem_write,
-	data_out
+	.inst_addr,
+	.instr,
+	.data_addr,
+	.data_in,
+	.mem_read (mem_read_ctrlsig),
+	.mem_write (mem_write_ctrlsig),
+	.data_out
 	);
 
 // Initial Conditions
@@ -51,5 +51,16 @@ end
 always #5 clk=~clk;
 
 // Input Waveform
+
+initial begin
+
+#50
+pc_reset=1;
+#50
+pc_reset=0
+
+#1500 $finish 
+
+end
 
 endmodule

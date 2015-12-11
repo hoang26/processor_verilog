@@ -12,6 +12,12 @@ module reg_file(regWrite, clk, readReg1, readReg2, writeReg, writeData, readData
 	output reg [31:0] readData2;
 
 	reg [31:0] regFile [31:0];
+	
+	integer i;
+	initial begin
+		for (i=0; i<32; i=i+1)
+			regFile[i] <=0;
+	end
 
 	always@(readReg1 or readReg2 or regFile)
 	begin

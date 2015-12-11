@@ -17,11 +17,11 @@ input wire pc_enable;
 
 input wire[31:0] instr;
 input wire[31:0] data_out;
-output reg[31:0] data_in;
-output reg[31:0] inst_addr;
-output reg[31:0] data_addr;
-output reg mem_read_ctrlsig;
-output reg mem_write_ctrlsig;
+output wire[31:0] data_in;
+output wire[31:0] inst_addr;
+output wire[31:0] data_addr;
+output wire mem_read_ctrlsig;
+output wire mem_write_ctrlsig;
 
 wire [31:0] pc_in;
 wire [31:0] pc_out;
@@ -47,8 +47,6 @@ wire [31:0] jump_addr;
 
 wire [27:0] sl26_out;
 
-wire [15:0] sign_ext_in;
-
 wire [5:0] opcode;
 wire [5:0] aluctrl_func_op;
 
@@ -60,16 +58,21 @@ wire [3:0] alu_ctrl;
 
 wire [1:0] alu_op;
 
-wire reg_dst, jump, branch, mem_to_reg, alu_src, reg_write, mux3_sel, mem_read, mem_write, zero, ctrl_mem_read, ctrl_mem_write;
+wire reg_dst, jump, branch, mem_to_reg, alu_src, reg_write, mux3_sel, zero, ctrl_mem_read, ctrl_mem_write;
 
 assign add0_in1 = 32'd4;
-assign jump_addr = {{pc_plus_four[31:28]}, {sl26_out[27:0]}};
+assign jump_addr = {pc_plus_four[31:28], sl26_out[27:0]};
 assign aluctrl_func_op = instr[5:0];
 
 assign mux3_sel =  branch & zero; // bit-wise AND
 
 assign readReg1 = instr[25-21];
 assign readReg2 = instr[20-16];
+
+assign inst_addr = pc_out;
+assign data_in = readData2;
+assign data_addr = alu_data_output;
+
 
 pc pc0(
 	.in (pc_in), //32 bits
@@ -87,9 +90,9 @@ Control ctrl0(
 	.reg_dst,
 	.jump,
 	.branch,
-	.ctrl_mem_read,
+	.ctrl_mem_read (mem_read_ctrlsig),
 	.mem_to_reg,
-	.ctrl_mem_write,
+	.ctrl_mem_write (mem_write_ctrlsig),
 	.alu_src,
 	.reg_write,
 	.alu_op //2 bits
@@ -112,8 +115,8 @@ Adder_32b adder1(
 	);
 
 reg_file registers(
-	.clk,
 	.regWrite (reg_write),
+	.clk,
 	.readReg1, //5bits
 	.readReg2, //5bits
 	.writeReg (mux0_out), //5bits
@@ -201,13 +204,5 @@ ALU alu0(
 
 // Considerations: Reordering of modules to reduce clock cycles
 
-always@(posedge clk)
-begin
-	inst_addr = pc_out;
-	data_in = readData2;
-	data_addr = alu_data_output;
-	mem_read_ctrlsig = ctrl_mem_read;
-	mem_write_ctrlsig = ctrl_mem_write;
-end	
 
 endmodule
