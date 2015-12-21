@@ -71,7 +71,6 @@ assign sign_ext_in = instr[15:0];
 assign sl26_in = instr[25:0];
 assign reg_dst_input0 = instr[20:16];
 assign reg_dst_input1 = instr[15:11];
-//assign mem_read_ctrlsig = 
 
 pc pc0(
 	.in(pc_in), //32bit
@@ -114,7 +113,7 @@ Adder_32b adder1(
 	);
 
 reg_file registers(
-    .clk,
+  .clk,
 	.regWrite(reg_write),
 	.readReg1(readReg1), //5bit
 	.readReg2(readReg2), //5bit
@@ -126,76 +125,76 @@ reg_file registers(
 
 sign_extender signext0(
 	.clk,
-	.in (sign_ext_in), //16bit
-	.out (sign_ext_out) //32bit
+	.in(sign_ext_in), //16bit
+	.out(sign_ext_out) //32bit
 	);
 
 Shift_left2_26b sl26(
 	.clk,
-	.in (sl26_in), //26bit
-	.out (sl26_out) //28bit
+	.in(sl26_in), //26bit
+	.out(sl26_out) //28bit
 	);
 
 Shift_left2_32b sl32(
 	.clk,
-	.in (sign_ext_out), //32bit
-	.out (sl32_out) //32bit
+	.in(sign_ext_out), //32bit
+	.out(sl32_out) //32bit
 	);
 
 // THIS NEEDS TO BE 5 BIT MUX
 Mux2x1_5b Mux_RegDst(
 	.clk,
-	.input0 (reg_dst_input0), //5bit
-	.input1 (reg_dst_input1), //5bit
-	.select (reg_dst),
-	.out (reg_dst_out) //5bit
+	.input0(reg_dst_input0), //5bit
+	.input1(reg_dst_input1), //5bit
+	.select(reg_dst),
+	.out(reg_dst_out) //5bit
 	);
 
 Mux2x1_32b Mux_ALUsrc(
 	.clk,
-	.input0 (readData2), //32bit
-	.input1 (sign_ext_out), //32bit
-	.select (alu_src),
-	.out (alu_src_out) //32bit
+	.input0(readData2), //32bit
+	.input1(sign_ext_out), //32bit
+	.select(alu_src),
+	.out(alu_src_out) //32bit
 	);
 
 Mux2x1_32b Mux_MemtoReg(
 	.clk,
-	.input0 (alu_data_output), //32bit
-	.input1 (data_out), //32bit
-	.select (mem_to_reg),
-	.out (mem_to_reg_out) //32bit
+	.input0(alu_data_output), //32bit
+	.input1(data_out), //32bit
+	.select(mem_to_reg),
+	.out(mem_to_reg_out) //32bit
 	);
 
 Mux2x1_32b Mux_Branch(
 	.clk,
-	.input0 (pc_plus_four), //32bit
-	.input1 (adder_result), //32bit
-	.select (mux3_sel),
-	.out (branch_out) //32bit
+	.input0(pc_plus_four), //32bit
+	.input1(adder_result), //32bit
+	.select(mux3_sel),
+	.out(branch_out) //32bit
 	);
 
 Mux2x1_32b Mux_Jump(
 	.clk,
-	.input0 (branch_out), //32bit
-	.input1 (jump_addr), //32bit
-	.select (jump),
-	.out (pc_in) //32bit
+	.input0(branch_out), //32bit
+	.input1(jump_addr), //32bit
+	.select(jump),
+	.out(pc_in) //32bit
 	);
 
 alu_control aluctrl(
 	.clk,
 	.alu_op, //2bit
-	.func_op (aluctrl_func_op), //6bit
-	.alu_control_sig (alu_ctrl) //4bit
+	.func_op(aluctrl_func_op), //6bit
+	.alu_control_sig(alu_ctrl) //4bit
 	);
 
 ALU alu0(
 	.clk,
-	.control (alu_ctrl), //4bit
-	.data_input1 (readData1), //32bit
-	.data_input2 (alu_src_out), //32bit
-	.data_output (alu_data_output), //32bit
+	.control(alu_ctrl), //4bit
+	.data_input1(readData1), //32bit
+	.data_input2(alu_src_out), //32bit
+	.data_output(alu_data_output), //32bit
 	.zero
 	);
 
