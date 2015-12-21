@@ -4,12 +4,12 @@ module processor_tb;
 reg clk;
 reg pc_reset;
 reg pc_enable;
+//reg regInit;
 
 // Making these wires instead of registers resolves:
 // "illegal output or inout port connection for port"
 wire [31:0] instr;
 wire [31:0] data_out;
-
 wire [31:0] data_in;
 wire [31:0] inst_addr;
 wire [31:0] data_addr;
@@ -45,6 +45,7 @@ initial begin
     clk=0;
 	pc_reset=0;
 	pc_enable=1;
+	//regInit=1;
 end
 
 // Clock
@@ -53,13 +54,11 @@ always #5 clk=~clk;
 // Input Waveform
 
 initial begin
-
 #50
 pc_reset=1;
 #50
-pc_reset=0
+pc_reset=0;
 
-#1500 $finish 
 
 end
 
