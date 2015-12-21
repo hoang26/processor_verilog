@@ -1,6 +1,6 @@
 module Control(
-    input wire [5:0] opcode,
-    input wire clk,
+    input [5:0] opcode,
+    input clk,
     output reg reg_dst,
     output reg jump,
     output reg branch,

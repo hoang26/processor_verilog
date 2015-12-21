@@ -43,13 +43,14 @@ Memory mem(
 // Initial Conditions
 initial begin
     clk=0;
-	pc_reset=0;
-	pc_enable=1;
+    pc_reset=0;
+    pc_enable=1;
 	//regInit=1;
 end
 
 // Clock
 always #5 clk=~clk;
+
 
 // Input Waveform
 
@@ -59,7 +60,8 @@ pc_reset=1;
 #50
 pc_reset=0;
 
-
+//if (instr == 32'hfc000000) begin
+//    $finish;
 end
 
 endmodule

@@ -1,12 +1,11 @@
 //  Top-level processor module
 
 module processor(
-    input wire clk,
-    input wire pc_reset,
-    input wire pc_enable,
-    //input wire regInit,
-    input wire[31:0] instr,
-    input wire[31:0] data_out,
+    input clk,
+    input pc_reset,
+    input pc_enable,
+    input [31:0] instr,
+    input [31:0] data_out,
     output wire[31:0] data_in,
     output wire[31:0] inst_addr,
     output wire[31:0] data_addr,
@@ -36,10 +35,16 @@ wire [31:0] alu_data_output;
 wire [31:0] sl32_out;
 wire [31:0] jump_addr;
 
+wire [25:0] sl26_in;
 wire [27:0] sl26_out;
+
+wire [15:0] sign_ext_in;
 
 wire [5:0] opcode;
 wire [5:0] aluctrl_func_op;
+
+wire [4:0]reg_dst_input0;
+wire [4:0]reg_dst_input1;
 
 wire [4:0] readReg1;
 wire [4:0] readReg2;
@@ -62,69 +67,72 @@ assign data_in = readData2;
 assign data_addr = alu_data_output;
 assign writeReg = reg_dst_out;
 assign opcode = instr[31:26];
+assign sign_ext_in = instr[15:0];
+assign sl26_in = instr[25:0];
+assign reg_dst_input0 = instr[20:16];
+assign reg_dst_input1 = instr[15:11];
 //assign mem_read_ctrlsig = 
 
 pc pc0(
-	.in (pc_in), //32bit
+	.in(pc_in), //32bit
 	.clk,
-	.rst (pc_reset),
-	.en (pc_enable),
-	.out (pc_out) //32bit
+	.rst(pc_reset),
+	.en(pc_enable),
+	.out(pc_out) //32bit
 	);
 
 // Moved control up here because mem_write from control feeds
 // into mem_write for mem0
 Control ctrl0(
 	.clk,
-	.opcode, //6bit
-	.reg_dst,
-	.jump,
-	.branch,
-	.ctrl_mem_read (mem_read_ctrlsig),
-	.mem_to_reg,
-	.ctrl_mem_write (mem_write_ctrlsig),
-	.alu_src,
-	.reg_write,
-	.alu_op //2bit
+	.opcode(opcode), //6bit
+	.reg_dst(reg_dst),
+	.jump(jump),
+	.branch(branch),
+	.ctrl_mem_read(mem_read_ctrlsig),
+	.mem_to_reg(mem_to_reg),
+	.ctrl_mem_write(mem_write_ctrlsig),
+	.alu_src(alu_src),
+	.reg_write(reg_write),
+	.alu_op(alu_op) //2bit
 	);
 
 // 32-bit Adder for PC + 4
 Adder_32b pc_adder(
 	.clk,
-	.input0 (pc_out), //32bi
-	.input1 (add0_in1), //32bit
-	.out (pc_plus_four) //32bit
+	.input0(pc_out), //32bi
+	.input1(add0_in1), //32bit
+	.out(pc_plus_four) //32bit
 	);
 
 // 32-bit Adder for branch
 Adder_32b adder1(
 	.clk,
-	.input0 (pc_plus_four), //32bit
-	.input1 (sl32_out), //32bit
-	.out (adder_result) //32bit
+	.input0(pc_plus_four), //32bit
+	.input1(sl32_out), //32bit
+	.out(adder_result) //32bit
 	);
 
 reg_file registers(
     .clk,
-	.regWrite (reg_write),
-	//.regInit,
-	.readReg1, //5bit
-	.readReg2, //5bit
-	.writeReg, //5bit
-	.writeData (mem_to_reg_out), //32bit
-	.readData1, //32bit
-	.readData2 //32bit
+	.regWrite(reg_write),
+	.readReg1(readReg1), //5bit
+	.readReg2(readReg2), //5bit
+	.writeReg(writeReg), //5bit
+	.writeData(mem_to_reg_out), //32bit
+	.readData1(readData1), //32bit
+	.readData2(readData2) //32bit
 	);
 
 sign_extender signext0(
 	.clk,
-	.in (instr[15:0]), //16bit
+	.in (sign_ext_in), //16bit
 	.out (sign_ext_out) //32bit
 	);
 
 Shift_left2_26b sl26(
 	.clk,
-	.in (instr[25:0]), //26bit
+	.in (sl26_in), //26bit
 	.out (sl26_out) //28bit
 	);
 
@@ -137,8 +145,8 @@ Shift_left2_32b sl32(
 // THIS NEEDS TO BE 5 BIT MUX
 Mux2x1_5b Mux_RegDst(
 	.clk,
-	.input0 (instr[20:16]), //5bit
-	.input1 (instr[15:11]), //5bit
+	.input0 (reg_dst_input0), //5bit
+	.input1 (reg_dst_input1), //5bit
 	.select (reg_dst),
 	.out (reg_dst_out) //5bit
 	);

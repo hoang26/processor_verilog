@@ -1,12 +1,12 @@
 // Register file modeled off HW6 solutions #3
 module reg_file(
-    input wire clk,
-    input wire regWrite,
+    input clk,
+    input regWrite,
     //input wire regInit,
-    input wire [4:0] readReg1,
-    input wire [4:0] readReg2,
-    input wire [4:0] writeReg,
-    input wire [31:0] writeData,
+    input [4:0] readReg1,
+    input [4:0] readReg2,
+    input [4:0] writeReg,
+    input [31:0] writeData,
     output reg [31:0] readData1, 
     output reg [31:0] readData2
     );
@@ -15,8 +15,9 @@ reg [31:0] regFile [31:0];
 
 	integer i;
 	initial begin
-		for (i=0; i<32; i=i+1)
+		for (i=0; i<32; i=i+1) begin
 			regFile[i] <=0;
+		end
 	end
 
 always@(readReg1 or readReg2 or regFile)
